@@ -3,6 +3,7 @@ import {
   Outlet,
   createRootRoute,
   Route,
+  redirect,
 } from "@tanstack/react-router";
 import { lazy } from "react";
 import { AuthProvider } from "../context/AuthContext";
