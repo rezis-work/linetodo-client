@@ -1,1 +1,29 @@
 @import "tailwindcss";
+
+
+.responsive-columns {
+    column-count: 1;
+    column-gap: 1.5rem;
+    width: 100%;
+    margin: 0 auto;
+  }
+  
+  @media (min-width: 640px) {
+    .responsive-columns {
+      column-count: 2;
+      width: auto;
+    }
+  }
+  
+  @media (min-width: 848px) {
+    .responsive-columns {
+      column-count: 3;
+    }
+  }
+  
+  @media (min-width: 1140px) {
+    .responsive-columns {
+      column-count: 4;
+      max-width: 1200px;
+    }
+  }
