@@ -3,6 +3,7 @@ import calendar from "../../assets/tasks/calendar.png";
 import settings from "../../assets/tasks/settings.png";
 import check from "../../assets/tasks/check.png";
 import TaskSettingBox from "./TaskSettingBox";
+import "../../index.css";
 
 interface Task {
   id: number;
@@ -16,10 +17,9 @@ interface Task {
 export const TaskBox = memo(({ task }:{ task:Task}) => {
   const [openSettings,setOpenSettings] = useState<boolean>(false);
   const handleClick = () => {
-    console.log("Task clicked:", task.id);
-    setOpenSettings(!openSettings);
-    
+    setOpenSettings(!openSettings);    
   }
+  
 
   return (
     <div
