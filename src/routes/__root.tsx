@@ -18,3 +18,4 @@ export const Route = createRootRoute({
     </>
   ),
 });
+ export type RoutersType =  typeof Route

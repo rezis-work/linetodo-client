@@ -1,10 +1,10 @@
 import { memo } from 'react'
-import importance from "../../assets/tasks/Settings/importance.png" 
-import Complete from "../../assets/tasks/Settings/Complete.png"
-import edit from "../../assets/tasks/Settings/edit.png"
-import Dellete from "../../assets/tasks/Settings/delete.png"
+import importance from "../../../assets/tasks/Settings/importance.png" 
+import Complete from "../../../assets/tasks/Settings/Complete.png"
+import edit from "../../../assets/tasks/Settings/edit.png"
+import Dellete from "../../../assets/tasks/Settings/delete.png"
 
-const TaskSettingBox = memo(({openSettings}:any) =>{
+const TaskSettingBox = memo(({openSettings}:{openSettings:boolean}) =>{
 
     const settings = [
         {
