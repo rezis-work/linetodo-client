@@ -1,1 +1,6 @@
 @import "tailwindcss";
+
+@font-face {
+    font-family: Roboto;
+    src: url('./fonts/Roboto-VariableFont_wdth,wght.ttf');
+}

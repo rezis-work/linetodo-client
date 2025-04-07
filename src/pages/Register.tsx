@@ -9,7 +9,7 @@ export default function Login() {
         src="/assets/group-6.png" 
         alt="group of tasks" 
       />
-      <Auth type='login' />
+      <Auth type='register' />
     </div>
   );
 }
