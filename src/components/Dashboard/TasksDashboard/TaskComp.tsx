@@ -3,23 +3,23 @@ import calendar from "../../../assets/tasks/calendar.png";
 import settings from "../../../assets/tasks/settings.png";
 import check from "../../../assets/tasks/check.png";
 import TaskSettingBox from "./TaskSettingBox";
-import { Task } from "../../../features/dahsboardTasks";
+import { popUpOpen, Task } from "../../../types/dashboardTasksTypes";
 
 
 
-export const TaskBox = memo(({ task }: { task: Task }) => {
+export const TaskBox = memo(({ task,setPopUp,setTasks }: { task: Task,setPopUp:(popUp:popUpOpen)=>void,setTasks:(tasks:Task[]|((prev:Task[]|undefined)=>Task[]))=> void }) => {
   const [openSettings, setOpenSettings] = useState<boolean>(false);
   const handleClick = () => {
     setOpenSettings(!openSettings);
   };
 
-  const UIDate = (dateStr: string): string => {
-    const date = new Date(dateStr);
+  const UIDate = (dateStr: string|undefined): string => {
+    const date =dateStr && new Date(dateStr);
 
     // Extract day, month, and year
-    const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
-    const year = date.getFullYear();
+    const day = date instanceof Date ? String(date.getDate()).padStart(2, "0") : "";
+    const month = date instanceof Date ? String(date.getMonth() + 1).padStart(2, "0") : ""; // Months are 0-indexed
+    const year = date instanceof Date ? date.getFullYear() : "";
 
     // Format the date as dd/mm/yyyy
     return `${day}/${month}/${year}`;
@@ -57,6 +57,10 @@ export const TaskBox = memo(({ task }: { task: Task }) => {
       </div>
       <TaskSettingBox
         openSettings={openSettings}
+        setOpenSettings={setOpenSettings}
+        setPopUp={setPopUp}
+        task={task}
+        setTasks={setTasks}
       />
     </div>
   );

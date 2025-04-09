@@ -1,18 +1,14 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { memo } from 'react'
 import AddTaskButton from './AddTaskButton'
 import { FiltersBox } from './FiltersBox'
-import { Filter } from '../../../features/dahsboardTasks'
+import { dashboardTasksHead } from '../../../types/dashboardTasksTypes'
 
-interface dashboardTasksHead {
-  filters:Filter,
-  router:any
-}
 
-const DashboardTasksHead = memo(({filters,router}:dashboardTasksHead) => {
+
+const DashboardTasksHead = memo(({filters,router,setPopUp}:dashboardTasksHead) => {
   return (
-    <div className="w-full flex flex-col md:flex-row md:gap-[10px] max-w-[1080px] md:justify-between" >
-        <AddTaskButton/>
+    <div className="w-full flex flex-col md:flex-row md:gap-[10px] sm:gap-[6px] max-w-[1080px] md:justify-between" >
+        <AddTaskButton setPopUp={setPopUp}  />
         <FiltersBox filters={filters} router={router} />
       </div>
   )

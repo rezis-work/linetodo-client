@@ -1,53 +1,10 @@
-import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { Filter, pathFilter, popUpOpen, RouterType, Task } from "../types/dashboardTasksTypes";
+import { QueryObserverResult } from "@tanstack/react-query";
 
 //--------------------------------------------- filter --------------------------------//
 
-export interface Filter {
-    date:boolean,
-    priority:number,
-    completed:boolean
-  }
 
-  interface pathFilter{
-    sort?: string,
-    priority?: number,
-    completed?: boolean
-  }
-
-export  interface RouterType {
-    navigate: (options: {
-      to: "/" | "/dashboard" | "/login"
-      search?: 
-        | true  // Keep existing params
-        | ((prev: Record<string, unknown>) => Record<string, unknown>)
-        | {
-            completed?: boolean
-            priority?: number
-            sort?: string
-          }
-    }) => Promise<void>
-    
-    state: {
-      location: {
-        pathname: string
-        search: {
-          completed?: boolean
-          priority?: number
-          sort?: string
-        }
-      }
-    },
-    latestLocation:{
-        search: {
-          completed?: boolean
-          priority?: number
-          sort?: string
-        
-      }
-    }
-    // Other methods...
-  }
 
 export const handlePath = (
   key: keyof Filter | React.ChangeEvent<HTMLSelectElement>,
@@ -60,7 +17,6 @@ export const handlePath = (
 
   const navigateWithToggle = (newParams: Partial<pathFilter>) => {
     const finalParams = { ...currentParams };
-    console.log(finalParams);
     
     // Toggle logic
     Object.entries(newParams).forEach(([key, value]) => {
@@ -87,8 +43,6 @@ export const handlePath = (
       to: "/dashboard",
       search: finalParams,
     });
-
-    console.log("Navigation params:", finalParams);
   };
 
   if (typeof key === "object") {
@@ -112,7 +66,6 @@ export const handleFilter = (filter: {
     completed:filter.completed?true:false,
     priority:filter.priority?filter.priority:0
   }  
-  console.log(newFilter);
   
   setFilter(newFilter)
   
@@ -121,19 +74,12 @@ export const handleFilter = (filter: {
 //------------------------------------- fatching ----------------------------------------//
 
 
-export interface Task {
-    completed: boolean,
-    createdAt: string
-    priority: number
-    task: string
-    _id: string
-    color?: string;
-  }
+
 
 const colors:string[] = ["#e3ebfc","#FBF0E4","#E4F6FC","#FCE4E4","#E7E4FC","#FCE4F5"]
 
 
-const fetchData = async (search:Filter) => {
+export const fetchData = async (search:Filter) => {
 
     const params = {
       ...(search.date ?{ sort: "asc" }:{}),
@@ -141,24 +87,120 @@ const fetchData = async (search:Filter) => {
       ...(search.completed ? { completed: search.completed } : {}),
     };
   
-    console.log("params ",params);
-    
+    try{
 
     const response = await axios.get('http://localhost:5000/tasks', {
       params,
       headers: {
-        Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2YyNjFhMDg2YWYxOWViMTgyZDk2N2UiLCJ1c2VybmFtZSI6Im5pa2FuaWthIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzQ0MDIyNTA4LCJleHAiOjE3NDQwMjYxMDh9.l0iVjRfBFM2BWAI7Fuyyvm73SHfGoTprLaijTUISIR4`,  
+        Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2YyNjFhMDg2YWYxOWViMTgyZDk2N2UiLCJ1c2VybmFtZSI6Im5pa2FuaWthIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzQ0MjM2OTA1LCJleHAiOjE3NDQyNDA1MDV9.TpUErHuN3J3fj6FgVpg7Y97iFOp_HfVmCZgBKCDep-c`,  
       },
     });
-    console.log("response",response);
     
     const  data = response.data.map((item:Task)=>{return {...item,color:colors[Math.floor(Math.random() * colors.length)]}})
     return data;
+    }catch(err){
+      console.log(err);
+      
+    }
   };
+//------------------------------------------- TaskSettingBox ----------------------------------------------------------//
 
- export const useFetchData = ({ filter }:{filter:Filter}) => {
-    return useQuery<Task[], Error>({
-      queryKey: ["data", filter.date, filter.priority, filter.completed],
-      queryFn: () => fetchData(filter),
+export const handleSettingsButtons = ({setPopUp,setOpenSettings,task,content,setTasks}:{setPopUp:(popUp:popUpOpen)=>void,setOpenSettings:(openSettings:boolean)=>void,task: Task,content:string|null,setTasks:(tasks:Task[]|((prev:Task[]|undefined)=>Task[]))=> void})=>{
+  
+  if(content == "Delete"){
+    deleteData(task._id,setTasks)
+  }else if(content == "Complete"){
+    const changeCompleted = {completed:!task.completed}
+    updateData(changeCompleted,task._id,setTasks)
+  }else{
+    setPopUp({open:true,content,taskData:task})
+  }
+  setOpenSettings(false)
+}
+
+//------------------------------------------- addTask -----------------------------------------------------------------//
+
+export const postData = async (task: Task) => {
+
+  try{
+    await axios.post('http://localhost:5000/tasks', 
+      task,
+      {
+        headers: {
+          Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2YyNjFhMDg2YWYxOWViMTgyZDk2N2UiLCJ1c2VybmFtZSI6Im5pa2FuaWthIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzQ0MjM2OTA1LCJleHAiOjE3NDQyNDA1MDV9.TpUErHuN3J3fj6FgVpg7Y97iFOp_HfVmCZgBKCDep-c`,  
+        },
+      }
+    );
+  }catch(err){
+    console.log(err);
+  }
+  
+};
+
+export const onPopUpClose = (setPopUp:(popUp:popUpOpen)=>void)=>{
+  setPopUp({open:false,content:""})
+}
+
+export const onAddPopUpCreate = async ({value,setPopUp,refetch}:{value:Task,setPopUp:(popUp:popUpOpen)=>void,refetch:() => Promise<QueryObserverResult<Task[], Error>>}) => {
+        await postData(value);
+        refetch()
+        onPopUpClose(setPopUp);
+}
+
+//------------------------------------ editTask --------------------------------------------------//
+
+export const updateData = async (task: Task|{priority:number}|{ completed: boolean; },id:string|undefined,setTasks:(tasks:Task[]|((prev:Task[]|undefined)=>Task[]))=> void) => {
+  
+  try{
+    await axios.patch(`http://localhost:5000/tasks/${id}`, 
+      task,
+      {
+        headers: {
+          Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2YyNjFhMDg2YWYxOWViMTgyZDk2N2UiLCJ1c2VybmFtZSI6Im5pa2FuaWthIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzQ0MjM2OTA1LCJleHAiOjE3NDQyNDA1MDV9.TpUErHuN3J3fj6FgVpg7Y97iFOp_HfVmCZgBKCDep-c`,  
+        },
+      }
+    )
+    const updatedTask = {...task};
+    if ('color' in updatedTask && !updatedTask.color) {
+        updatedTask.color = "#FBF0E4";
+    }
+    
+    setTasks((prev: Task[]|undefined) => {
+      
+      const newTasks = prev ? prev.map(t => t._id === id ? { ...t, ...updatedTask } : t) : [];
+      
+      return newTasks
     });
-  };
+  }catch(err){
+    console.log(err);
+  }
+  
+};
+
+export const onEditPopUpCreate = ({value,id,setPopUp,setTasks}:{value:Task|{priority:number},id:string|undefined,setPopUp:(popUp:popUpOpen)=>void,setTasks:(tasks:Task[]|((prev:Task[]|undefined)=>Task[]))=> void}) => {
+  updateData(value,id,setTasks);  
+  onPopUpClose(setPopUp);
+}
+
+//------------------------------------------- delete task ------------------------------------------------------//
+
+export const deleteData = async (id:string|undefined,setTasks:(tasks:Task[]|((prev:Task[]|undefined)=>Task[]))=> void) => {
+  
+  try{
+    await axios.delete(`http://localhost:5000/tasks/${id}`,
+      {
+        headers: {
+          Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2YyNjFhMDg2YWYxOWViMTgyZDk2N2UiLCJ1c2VybmFtZSI6Im5pa2FuaWthIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzQ0MjM2OTA1LCJleHAiOjE3NDQyNDA1MDV9.TpUErHuN3J3fj6FgVpg7Y97iFOp_HfVmCZgBKCDep-c`,  
+        },
+      }
+    )
+
+    setTasks((prev)=>{
+      return prev? prev.filter(i => i._id != id):[]
+    })  
+  }catch(err){
+    console.log(err);
+  }
+  
+};
+

@@ -1,17 +1,14 @@
 import { memo } from 'react'
 
 import check from "../../../assets/tasks/check.png";
-import { type Filter, handlePath, RouterType } from '../../../features/dahsboardTasks';
+import { handlePath } from '../../../features/dahsboardTasks';
+import { filterComp } from '../../../types/dashboardTasksTypes';
 
-interface filterComp {
-  filters:Filter,
-  type:keyof Filter,
-  router:RouterType
-}
+
 
 const FilterCopm = memo(({filters,type,router}:filterComp) => {
   return (
-    <label className="flex items-center gap-2 cursor-pointer relative ">
+    <label className="flex items-center gap-2 md:gap-[6px]  cursor-pointer relative ">
       {type == "priority"?
       <>
       <select
